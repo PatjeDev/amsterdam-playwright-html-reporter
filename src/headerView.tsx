@@ -16,162 +16,209 @@
 
 import type { Stats } from './types';
 import * as React from 'react';
+
 import './colors.css';
 import './common.css';
 import './headerView.css';
-import * as icons from './icons';
-import { Link, navigate, useSearchParams } from './links';
-import { statusIcon } from './statusIcon';
-import { filterWithQuery } from './filter';
+
+import { useSearchParams } from './links';
 import { linkifyText } from '@web/renderUtils';
-import { Dialog } from '@web/shared/dialog';
-import { kThemeOptions, type Theme, useThemeSetting } from '@web/theme';
-import { useSetting } from '@web/uiUtils';
+
+import {
+  SearchField,
+  TabNavigation,
+} from '@amsterdam/design-system-react';
+
+import {
+  ClockIcon,
+  ErrorIcon,
+  InfoIcon,
+  SuccessIcon,
+  WarningIcon,
+} from '@amsterdam/design-system-react-icons';
+import { filterWithQuery } from './filter';
 
 export const HeaderView: React.FC<{
   title: string | undefined,
   leftSuperHeader?: React.ReactNode,
   rightSuperHeader?: React.ReactNode,
-}> = ({ title, leftSuperHeader, rightSuperHeader }) => {
-  return <div className='header-view'>
-    <div className='hbox header-superheader'>
-      {leftSuperHeader}
-      <div style={{ flex: 'auto' }}></div>
-      {rightSuperHeader}
+}> = ({
+  title,
+  leftSuperHeader,
+  rightSuperHeader,
+}) => {
+  return (
+    <div className='header-view'>
+      <div className='hbox header-superheader'>
+        {leftSuperHeader}
+
+        <div style={{ flex: 'auto' }} />
+
+        {rightSuperHeader}
+      </div>
+
+      {title && (
+        <div className='header-title'>
+          {linkifyText(title)}
+        </div>
+      )}
     </div>
-    {title && <div className='header-title'>{linkifyText(title)}</div>}
-  </div>;
+  );
 };
 
 export const GlobalFilterView: React.FC<{
   stats: Stats,
   filterText: string,
   setFilterText: (filterText: string) => void,
-}> = ({ stats, filterText, setFilterText }) => {
-  const query = useSearchParams().get('q');
+}> = ({
+  stats,
+  filterText,
+  setFilterText,
+}) => {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q');
+
+  /*
+   * Keep the search input synchronized with the q parameter
+   * stored in the hash.
+   */
   React.useEffect(() => {
-    // Add an extra space such that users can easily add to query
     setFilterText(query ? `${query.trim()} ` : '');
   }, [query, setFilterText]);
 
-  return (<>
-    <div className='pt-3'>
-      <div className='header-view-status-container ml-2 pl-2 d-flex'>
-        <StatsNavView stats={stats}></StatsNavView>
-      </div>
-      <form className='subnav-search' onSubmit={
-        event => {
-          event.preventDefault();
-          const url = new URL(window.location.href);
-          const currentParams = new URLSearchParams(url.hash.slice(1));
-          // If <form/> onSubmit happens immediately after <input/> onChange, the filterText state is not updated yet.
-          // Using FormData here is a workaround to get the latest value.
-          const q = new FormData(event.target as HTMLFormElement).get('q') as string;
-          const params = new URLSearchParams({ q });
-          if (currentParams.has('speedboard'))
-            params.set('speedboard', '');
-          if (!!params.toString())
-            url.hash = '?' + params.toString();
-          navigate(url);
-        }
-      }>
-        {icons.search()}
-        {/* Use navigationId to reset defaultValue */}
-        <input name='q' spellCheck={false} className='form-control subnav-search-input input-contrast width-full' aria-label='Search tests' placeholder='Search tests' value={filterText} onChange={e => {
-          setFilterText(e.target.value);
-        }}></input>
-      </form>
+  /*
+   * SearchField renders its own <form>, so do not wrap it in
+   * another <form>. The application uses the URL hash for filters:
+   *
+   *   #?                         -> all
+   *   #?q=s%3Apassed             -> passed
+   *   #?q=s%3Afailed             -> failed
+   *   #?q=s%3Aflaky              -> flaky
+   *   #?q=s%3Askipped            -> skipped
+   *   #?speedboard               -> speedboard
+   *
+   * The normal URL query string is deliberately not used.
+   */
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const value = String(formData.get('q') ?? '').trim();
+
+    window.location.hash = value
+      ? `?q=${encodeURIComponent(value)}`
+      : '';
+  };
+
+  const handleSearchChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = event.target.value;
+
+    setFilterText(value);
+
+    /*
+     * The native clear button on <input type="search"> fires onChange,
+     * but does not submit the form.
+     *
+     * Remove q immediately when the input is cleared.
+     */
+    if (!value.trim()) {
+      window.location.hash = '';
+    }
+  };
+
+  return (
+    <div className='subnav-search'>
+      <SearchField
+        onSubmit={handleSearchSubmit}
+      >
+        <SearchField.Input
+          placeholder='Zoek testen'
+          name='q'
+          value={filterText}
+          onChange={handleSearchChange}
+        />
+
+        <SearchField.Button />
+      </SearchField>
+
+      <StatsNavView stats={stats} />
     </div>
-  </>);
+  );
 };
 
 const StatsNavView: React.FC<{
-  stats: Stats
+  stats: Stats,
 }> = ({ stats }) => {
-  const isSpeedboard = useSearchParams().has('speedboard');
+  const searchParams = useSearchParams();
 
-  return <nav>
-    <Link className='subnav-item' href='#?'>
-      <span className='subnav-item-label'>All</span>
-      <span className='d-inline counter'>{stats.total - stats.skipped}</span>
-    </Link>
-    <NavLink token='passed' count={stats.expected} />
-    <NavLink token='failed' count={stats.unexpected} />
-    <NavLink token='flaky' count={stats.flaky} />
-    <NavLink token='skipped' count={stats.skipped} />
-    <Link className='subnav-item' href='#?speedboard' title='Speedboard' aria-selected={isSpeedboard}>
-      {icons.clock()}
-    </Link>
-    <SettingsButton />
-  </nav>;
-};
+  const status = searchParams.get('q');
+  const isSpeedboard = searchParams.has('speedboard');
 
-const NavLink: React.FC<{
-  token: string,
-  count: number,
-}> = ({ token, count }) => {
-  const searchParams = new URLSearchParams(useSearchParams());
-  searchParams.delete('speedboard');
-  searchParams.delete('testId');
+  const isAll = !isSpeedboard && !status;
 
-  const queryToken = `s:${token}`;
+  return (
+    <TabNavigation>
+      <TabNavigation.List>
+        <TabNavigation.Link
+          aria-current={isAll ? 'page' : undefined}
+          href='#?'
+          count={stats.total - stats.skipped}
+        >
+          Alle
+        </TabNavigation.Link>
 
-  const clickUrl = filterWithQuery(searchParams, queryToken, false);
-  const ctrlClickUrl = filterWithQuery(searchParams, queryToken, true);
+        <TabNavigation.Link
+          aria-current={status === 's:passed' ? 'page' : undefined}
+          href='#?q=s%3Apassed'
+          icon={SuccessIcon}
+          className='passed'
+          count={stats.expected}
+        >
+          Geslaagd
+        </TabNavigation.Link>
 
-  const label = token.charAt(0).toUpperCase() + token.slice(1);
+        <TabNavigation.Link
+          aria-current={status === 's:failed' ? 'page' : undefined}
+          href='#?q=s%3Afailed'
+          icon={ErrorIcon}
+          className='failed'
+          count={stats.unexpected}
+        >
+          Mislukt
+        </TabNavigation.Link>
 
-  return <Link className='subnav-item' href={clickUrl} click={clickUrl} ctrlClick={ctrlClickUrl}>
-    {count > 0 && statusIcon(token as any)}
-    <span className='subnav-item-label'>{label}</span>
-    <span className='d-inline counter'>{count}</span>
-  </Link>;
-};
+        <TabNavigation.Link
+          aria-current={status === 's:flaky' ? 'page' : undefined}
+          href='#?q=s%3Aflaky'
+          icon={WarningIcon}
+          className='flaky'
+          count={stats.flaky}
+        >
+          Onbetrouwbaar
+        </TabNavigation.Link>
 
-const SettingsButton: React.FC = () => {
-  const settingsRef = React.useRef<HTMLDivElement>(null);
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const [theme, setTheme] = useThemeSetting();
-  const [mergeFiles, setMergeFiles] = useSetting('mergeFiles', false);
+        <TabNavigation.Link
+          aria-current={status === 's:skipped' ? 'page' : undefined}
+          href='#?q=s%3Askipped'
+          icon={InfoIcon}
+          className='skipped'
+          count={stats.skipped}
+        >
+          Overgeslagen
+        </TabNavigation.Link>
 
-  return <>
-    <div
-      role='button'
-      ref={settingsRef}
-      style={{ cursor: 'pointer' }}
-      className='subnav-item'
-      title='Settings'
-      onClick={e => {
-        setSettingsOpen(!settingsOpen);
-        e.preventDefault();
-      }}
-      onMouseDown={preventDefault}>
-      {icons.settings()}
-    </div>
-
-    <Dialog
-      open={settingsOpen}
-      minWidth={150}
-      verticalOffset={4}
-      requestClose={() => setSettingsOpen(false)}
-      anchor={settingsRef}
-      dataTestId='settings-dialog'
-    >
-      <label className='header-setting-theme'>
-        Theme:
-        <select value={theme} onChange={e => setTheme(e.target.value as Theme)}>
-          {kThemeOptions.map(option => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
-      </label>
-
-      <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-        <input type='checkbox' checked={mergeFiles} onChange={() => setMergeFiles(!mergeFiles)}></input>
-        Merge files
-      </label>
-    </Dialog>
-  </>;
+        <TabNavigation.Link
+          aria-current={isSpeedboard ? 'page' : undefined}
+          href='#?speedboard'
+          icon={ClockIcon}
+        >
+          Speedboard
+        </TabNavigation.Link>
+      </TabNavigation.List>
+    </TabNavigation>
+  );
 };
 
 const preventDefault = (e: any) => {

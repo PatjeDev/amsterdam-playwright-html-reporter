@@ -29,6 +29,10 @@
   min-height: 0;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 svg {
   fill: currentColor;
 }
@@ -177,6 +181,7 @@ article, aside, details, figcaption, figure, footer, header, main, menu, nav, se
   position: relative;
   flex: auto;
   display: flex;
+  gap: 10px;
 }
 
 .subnav-search-input {

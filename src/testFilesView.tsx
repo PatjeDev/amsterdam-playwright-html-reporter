@@ -62,7 +62,7 @@ export const TestFilesView: React.FC<{
           }}>
         </TestFileView>;
       })
-      : <div className='chip-header test-file-no-files'>No tests found</div>}
+      : <div className='chip-header test-file-no-files'>Geen testen gevonden</div>}
   </>;
 };
 
@@ -98,7 +98,6 @@ export const TestFilesHeader: React.FC<{
   </>;
 
   return <>
-    <HeaderView title={report.options.title} leftSuperHeader={leftSuperHeader} rightSuperHeader={rightSuperHeader} />
     {!isMetadataInTopLine && metadataToggleButton}
     {metadataVisible && <MetadataView metadata={report.metadata}/>}
     {!!report.errors.length && <Chip header='Errors' dataTestId='report-errors' expanded={errorsVisible} setExpanded={setErrorsVisible}>

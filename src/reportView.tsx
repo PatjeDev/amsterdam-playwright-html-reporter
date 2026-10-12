@@ -30,9 +30,11 @@ import { TestFilesHeader, TestFilesView } from './testFilesView';
 import './theme.css';
 import { useSetting } from '@web/uiUtils';
 import { Speedboard } from './speedboard';
-import { QuarantineProvider } from './customized/quarantineContext';
-import { TestQuarantineWidget } from './customized/testQuarantineWidget';
-import { FEATURES } from './customized/features';
+
+import { Grid, Heading, Page, PageFooter, PageHeader, Paragraph, Row, SkipLink } from "@amsterdam/design-system-react";
+
+import "@amsterdam/design-system-tokens/dist/index.css"
+import "@amsterdam/design-system-tokens/dist/compact.css"
 
 declare global {
   interface Window {
@@ -139,45 +141,82 @@ export const ReportView: React.FC<{
     if (reportTitle)
       document.title = reportTitle;
     else
-      document.title = 'Playwright Test Report';
+      document.title = 'Amsterdam Playwright Test Report';
   }, [reportTitle]);
 
-  return <div className='htmlreport vbox px-4 pb-4'>
-    <main>
-      {report && <GlobalFilterView stats={report.json().stats} filterText={filterText} setFilterText={setFilterText} />}
-      <Route predicate={testFilesRoutePredicate}>
-        <QuarantineProvider fullFiles={report?.json().files || []}>
-          <TestFilesHeader
-            report={report?.json()}
-            filteredStats={filteredStats}
-            metadataVisible={metadataVisible}
-            toggleMetadataVisible={() => setMetadataVisible(visible => !visible)}
-            errorsVisible={errorsVisible}
-            setErrorsVisible={setErrorsVisible}/>
-          {FEATURES.quarantine && <TestQuarantineWidget files={testModel.files} />}
-          <TestFilesView
-            files={testModel.files}
-            expandedFiles={expandedFiles}
-            setExpandedFiles={setExpandedFiles}
-            projectNames={report?.json().projectNames || []}
-          />
-        </QuarantineProvider>
-      </Route>
-      <Route predicate={speedboardRoutePredicate}>
-        <TestFilesHeader
-          report={report?.json()}
-          filteredStats={filteredStats}
-          metadataVisible={metadataVisible}
-          toggleMetadataVisible={() => setMetadataVisible(visible => !visible)}
-          errorsVisible={errorsVisible}
-          setErrorsVisible={setErrorsVisible}/>
-        {report && <Speedboard report={report} tests={testModel.tests} />}
-      </Route>
-      <Route predicate={testCaseRoutePredicate}>
-        {report && <TestCaseViewLoader report={report} next={next} prev={prev} testId={testId} testIdToFileIdMap={testIdToFileIdMap} />}
-      </Route>
-    </main>
-  </div>;
+  return (<>
+
+
+        <Grid paddingVertical="large">
+          <Grid.Cell appearance="transparent" span="all">
+            <Heading level={2} size="level-1">
+              {reportTitle}
+            </Heading>
+          </Grid.Cell>
+
+          <Grid.Cell span="all">
+            {report && (
+              <GlobalFilterView
+                stats={report.json().stats}
+                filterText={filterText}
+                setFilterText={setFilterText}
+              />
+            )}
+
+            <Route predicate={testFilesRoutePredicate}>
+              <TestFilesHeader
+                report={report?.json()}
+                filteredStats={filteredStats}
+                metadataVisible={metadataVisible}
+                toggleMetadataVisible={() =>
+                  setMetadataVisible(visible => !visible)
+                }
+                errorsVisible={errorsVisible}
+                setErrorsVisible={setErrorsVisible}
+              />
+
+              <TestFilesView
+                files={testModel.files}
+                expandedFiles={expandedFiles}
+                setExpandedFiles={setExpandedFiles}
+                projectNames={report?.json().projectNames || []}
+              />
+            </Route>
+
+            <Route predicate={speedboardRoutePredicate}>
+              <TestFilesHeader
+                report={report?.json()}
+                filteredStats={filteredStats}
+                metadataVisible={metadataVisible}
+                toggleMetadataVisible={() =>
+                  setMetadataVisible(visible => !visible)
+                }
+                errorsVisible={errorsVisible}
+                setErrorsVisible={setErrorsVisible}
+              />
+
+              {report && (
+                <Speedboard
+                  report={report}
+                  tests={testModel.tests}
+                />
+              )}
+            </Route>
+
+            <Route predicate={testCaseRoutePredicate}>
+              {report && (
+                <TestCaseViewLoader
+                  report={report}
+                  next={next}
+                  prev={prev}
+                  testId={testId}
+                  testIdToFileIdMap={testIdToFileIdMap}
+                />
+              )}
+            </Route>
+          </Grid.Cell>
+        </Grid>
+    </>);
 };
 
 const TestCaseViewLoader: React.FC<{
