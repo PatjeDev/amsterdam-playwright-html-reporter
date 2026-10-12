@@ -1,0 +1,120 @@
+
+.browser-matrix {
+  min-width: 0;
+  padding: 20px;
+  background: var(--color-panel, #fff);
+  color: var(--color-text, #1f2937);
+}
+
+.browser-matrix__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.browser-matrix__header h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.browser-matrix__header p {
+  margin: 0;
+  color: var(--color-muted, #6b7280);
+  font-size: 13px;
+}
+
+.browser-matrix__total {
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+.browser-matrix__table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.browser-matrix__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: center;
+}
+
+.browser-matrix__table th,
+.browser-matrix__table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  white-space: nowrap;
+}
+
+.browser-matrix__table thead th {
+  color: var(--color-muted, #6b7280);
+  font-weight: 600;
+}
+
+.browser-matrix__table th:first-child,
+.browser-matrix__table tbody th {
+  text-align: left;
+  text-transform: capitalize;
+}
+
+.browser-matrix__table tbody th {
+  font-weight: 600;
+}
+
+.browser-matrix__cell--passed {
+  color: #15803d;
+}
+
+.browser-matrix__cell--failed {
+  color: #dc2626;
+}
+
+.browser-matrix__cell--flaky {
+  color: #b45309;
+}
+
+.browser-matrix__cell--skipped {
+  color: var(--color-muted, #6b7280);
+}
+
+.browser-matrix__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--color-muted, #6b7280);
+}
+
+.browser-matrix__legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.browser-matrix__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.browser-matrix__dot--passed {
+  color: #16a34a;
+}
+
+.browser-matrix__dot--failed {
+  color: #dc2626;
+}
+
+.browser-matrix__dot--flaky {
+  color: #d97706;
+}
+
+.browser-matrix__dot--skipped {
+  color: #9ca3af;
+}

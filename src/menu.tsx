@@ -4,6 +4,7 @@ import type { HTMLAttributes } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { menuItems } from './menuItems'
+import { useTranslation } from './i18n'
 
 type AmsterdamPlaywrightReporterMenuProps = HTMLAttributes<HTMLElement> & {
     inWideWindow?: MenuProps['inWideWindow'],
@@ -15,22 +16,23 @@ export function AmsterdamPlaywrightReporterMenu(
     props: AmsterdamPlaywrightReporterMenuProps,
 ) {
     const { pathname } = useLocation()
+    const { t } = useTranslation()
 
     return (
         <Menu {...props}>
-            {menuItems.map(({ activePathPrefix, href, icon, text }) => {
+            {menuItems.map(({ activePathPrefix, href, icon, textKey }) => {
                 const isActive =
                     !!activePathPrefix &&
                     pathname.startsWith(activePathPrefix)
 
                 return (
                     <Menu.Link
-                        key={text}
+                        key={href}
                         href={`#${href}`}
                         icon={icon}
                         aria-current={isActive ? 'page' : undefined}
                     >
-                        {text}
+                        {t(textKey)}
                     </Menu.Link>
                 )
             })}

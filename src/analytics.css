@@ -1,0 +1,99 @@
+
+.analytics-dashboard {
+  padding: 20px;
+}
+
+.analytics-dashboard h2 {
+  margin-bottom: 20px;
+}
+
+.analytics-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.analytics-charts,
+.analytics-widgets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+  align-items: start;
+}
+
+.analytics-card {
+  min-width: 0;
+  padding: 16px;
+  background-color: var(--ams-color-background, #fff);
+}
+table {
+  min-width: 100%;
+}
+.analytics-kpis .analytics-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analytics-kpis strong {
+  font-size: 1.8rem;
+}
+
+.analytics-chart {
+  position: relative;
+  height: 280px;
+}
+
+.analytics-summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 16px;
+  margin: 16px 0;
+}
+
+.analytics-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.analytics-table th,
+.analytics-table td {
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border, #ddd);
+}
+
+.analytics-table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.analytics-card small {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.7;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1000px) {
+  .analytics-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .analytics-kpis,
+  .analytics-charts,
+  .analytics-widgets {
+    grid-template-columns: 1fr;
+  }
+}

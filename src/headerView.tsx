@@ -37,6 +37,7 @@ import {
   WarningIcon,
 } from '@amsterdam/design-system-react-icons';
 import { filterWithQuery } from './filter';
+import { useTranslation } from './i18n';
 
 export const HeaderView: React.FC<{
   title: string | undefined,
@@ -75,6 +76,7 @@ export const GlobalFilterView: React.FC<{
   filterText,
   setFilterText,
 }) => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const query = searchParams.get('q');
 
@@ -134,7 +136,7 @@ export const GlobalFilterView: React.FC<{
         onSubmit={handleSearchSubmit}
       >
         <SearchField.Input
-          placeholder='Zoek testen'
+          placeholder={t('report.search')}
           name='q'
           value={filterText}
           onChange={handleSearchChange}
@@ -151,6 +153,7 @@ export const GlobalFilterView: React.FC<{
 const StatsNavView: React.FC<{
   stats: Stats,
 }> = ({ stats }) => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
 
   const status = searchParams.get('q');
@@ -166,7 +169,7 @@ const StatsNavView: React.FC<{
           href='#?'
           count={stats.total - stats.skipped}
         >
-          Alle
+          {t('report.all')}
         </TabNavigation.Link>
 
         <TabNavigation.Link
@@ -176,7 +179,7 @@ const StatsNavView: React.FC<{
           className='passed'
           count={stats.expected}
         >
-          Geslaagd
+          {t('outcome.passed')}
         </TabNavigation.Link>
 
         <TabNavigation.Link
@@ -186,7 +189,7 @@ const StatsNavView: React.FC<{
           className='failed'
           count={stats.unexpected}
         >
-          Mislukt
+          {t('outcome.failed')}
         </TabNavigation.Link>
 
         <TabNavigation.Link
@@ -196,7 +199,7 @@ const StatsNavView: React.FC<{
           className='flaky'
           count={stats.flaky}
         >
-          Onbetrouwbaar
+          {t('outcome.flaky')}
         </TabNavigation.Link>
 
         <TabNavigation.Link
@@ -206,7 +209,7 @@ const StatsNavView: React.FC<{
           className='skipped'
           count={stats.skipped}
         >
-          Overgeslagen
+          {t('outcome.skipped')}
         </TabNavigation.Link>
 
         <TabNavigation.Link
@@ -214,7 +217,7 @@ const StatsNavView: React.FC<{
           href='#?speedboard'
           icon={ClockIcon}
         >
-          Speedboard
+          {t('report.speedboard')}
         </TabNavigation.Link>
       </TabNavigation.List>
     </TabNavigation>

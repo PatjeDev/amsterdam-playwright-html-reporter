@@ -6,11 +6,13 @@ import {
   SettingsIcon,
 } from '@amsterdam/design-system-react-icons'
 
+import type { TranslationKey } from './i18n'
+
 type MenuItem = {
   activePathPrefix?: string
   href: string
   icon: IconProps['svg']
-  text: string
+  textKey: TranslationKey
 }
 
 export const menuItems: Array<MenuItem> = [
@@ -18,18 +20,18 @@ export const menuItems: Array<MenuItem> = [
     activePathPrefix: '/dashboard',
     href: '/dashboard',
     icon: <PieChartIcon />,
-    text: 'Dashboard',
+    textKey: 'menu.dashboard',
   },
   {
     activePathPrefix: '/',
     href: '/',
     icon: <DocumentsIcon />,
-    text: 'Rapport',
+    textKey: 'menu.report',
   },
   {
     activePathPrefix: '/settings',
     href: '/settings',
     icon: <SettingsIcon />,
-    text: 'Instellingen',
+    textKey: 'menu.settings',
   },
 ]

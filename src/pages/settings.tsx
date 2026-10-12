@@ -12,19 +12,24 @@ import { useState } from 'react'
 
 import { kThemeOptions, Theme, useThemeSetting } from '@web/theme'
 import { useSetting } from '@web/uiUtils'
-
-const reportTitle = 'Instellingen'
+import {
+    kLanguageOptions,
+    Language,
+    useLanguage,
+    useTranslation,
+} from '../i18n'
 
 type SettingsTab = 'report' | 'appearance' | 'language'
 
 export function Settings() {
+    const { t } = useTranslation()
     const [activeTab, setActiveTab] = useState<SettingsTab>('report')
 
     return (
         <Grid paddingVertical="large">
             <Grid.Cell appearance="transparent" span="all">
                 <Heading level={2} size="level-1">
-                    {reportTitle}
+                    {t('settings.title')}
                 </Heading>
             </Grid.Cell>
 
@@ -41,7 +46,7 @@ export function Settings() {
                                 setActiveTab('report')
                             }}
                         >
-                            Rapport
+                            {t('settings.tab.report')}
                         </TabNavigation.Link>
 
                         <TabNavigation.Link
@@ -54,7 +59,7 @@ export function Settings() {
                                 setActiveTab('appearance')
                             }}
                         >
-                            Uiterlijk
+                            {t('settings.tab.appearance')}
                         </TabNavigation.Link>
 
                         <TabNavigation.Link
@@ -67,7 +72,7 @@ export function Settings() {
                                 setActiveTab('language')
                             }}
                         >
-                            Taal
+                            {t('settings.tab.language')}
                         </TabNavigation.Link>
                     </TabNavigation.List>
                 </TabNavigation>
@@ -83,6 +88,7 @@ export function Settings() {
 }
 
 function ReportSettings() {
+    const { t } = useTranslation()
     const [mergeFiles, setMergeFiles] = useSetting(
         'mergeFiles',
         false,
@@ -92,11 +98,11 @@ function ReportSettings() {
         <section className="settings-container">
             <Field>
                 <Label htmlFor="merge-file-setting-report">
-                    Bestanden samenvoegen
+                    {t('settings.report.label')}
                 </Label>
 
                 <Paragraph id="merge-file-setting-report-description">
-                    Combineer de bestanden van het testrapport.
+                    {t('settings.report.description')}
                 </Paragraph>
 
                 <Checkbox
@@ -105,7 +111,7 @@ function ReportSettings() {
                     checked={mergeFiles}
                     onChange={() => setMergeFiles(!mergeFiles)}
                 >
-                    Bestanden samenvoegen
+                    {t('settings.report.label')}
                 </Checkbox>
             </Field>
         </section>
@@ -113,6 +119,7 @@ function ReportSettings() {
 }
 
 function AppearanceSettings() {
+    const { t } = useTranslation()
     const [theme, setTheme] = useThemeSetting()
 
     return (
@@ -120,11 +127,11 @@ function AppearanceSettings() {
 
             <Field>
                 <Label htmlFor="header-setting-theme">
-                    Theme
+                    {t('settings.appearance.label')}
                 </Label>
 
                 <Paragraph id="header-setting-theme-description">
-                    Kies het uiterlijk van het rapport.
+                    {t('settings.appearance.description')}
                 </Paragraph>
 
                 <Select
@@ -150,34 +157,36 @@ function AppearanceSettings() {
 }
 
 function LanguageSettings() {
+    const { t } = useTranslation()
+    const [language, setLanguage] = useLanguage()
 
     return (
         <section className="settings-container">
             <Field>
-                <Label htmlFor="header-setting-theme">
-                    Taal
+                <Label htmlFor="header-setting-language">
+                    {t('settings.language.label')}
                 </Label>
 
-                <Paragraph id="header-setting-theme-description">
-                    Kies het uiterlijk van het rapport.
+                <Paragraph id="header-setting-language-description">
+                    {t('settings.language.description')}
                 </Paragraph>
 
                 <Select
-                    aria-describedby="header-setting-theme-description"
+                    aria-describedby="header-setting-language-description"
                     id="header-setting-language"
+                    value={language}
+                    onChange={(event) =>
+                        setLanguage(event.target.value as Language)
+                    }
                 >
+                    {kLanguageOptions.map((option) => (
                         <Select.Option
-                            key='nl'
-                            value='nl'
+                            key={option.value}
+                            value={option.value}
                         >
-                            Nederlands
+                            {option.label}
                         </Select.Option>
-                        <Select.Option
-                            key='en'
-                            value='en'
-                        >
-                            Engels
-                        </Select.Option>
+                    ))}
                 </Select>
             </Field>
         </section>

@@ -25,6 +25,7 @@ import { CodeSnippet } from './testErrorView';
 import * as icons from './icons';
 import { isMetadataEmpty, MetadataView } from './metadataView';
 import { clsx } from '@web/uiUtils';
+import { useTranslation } from './i18n';
 
 export const TestFilesView: React.FC<{
   files: TestFileSummary[],
@@ -32,6 +33,7 @@ export const TestFilesView: React.FC<{
   setExpandedFiles: (value: Map<string, boolean>) => void,
   projectNames: string[],
 }> = ({ files, expandedFiles, setExpandedFiles, projectNames }) => {
+  const { t } = useTranslation();
   const filteredFiles = React.useMemo(() => {
     const result: { file: TestFileSummary, defaultExpanded: boolean }[] = [];
     let visibleTests = 0;
@@ -61,7 +63,7 @@ export const TestFilesView: React.FC<{
           }}>
         </TestFileView>;
       })
-      : <div className='chip-header test-file-no-files'>Geen testen gevonden</div>}
+      : <div className='chip-header test-file-no-files'>{t('report.noTestsFound')}</div>}
   </>;
 };
 

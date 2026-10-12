@@ -1,13 +1,15 @@
 {
-  "name": "customized-html-reporter",
+  "name": "amsterdam-playwright-html-reporter",
   "private": true,
   "version": "0.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "wsl:build": "corepack yarn build",
     "preview": "vite preview",
-    "update:packages": "yarn up '*'"
+    "update:packages": "yarn up '*'",
+    "wsl:update:packages": "corepack yarn up \"*\""
   },
   "dependencies": {
     "@amsterdam/design-system-assets": "^2.6.0",
@@ -24,13 +26,13 @@
     "yazl": "^3.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "@types/node": "^26.6.4",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "typescript": "^7.0.2",
-    "vite": "^8.3.3"
+    "vite": "^8.3.4"
   },
   "packageManager": "yarn@4.18.1"
 }
