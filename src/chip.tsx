@@ -14,8 +14,6 @@
   limitations under the License.
 */
 
-// Modified from Playwright source: added beforeToggle prop to Chip for injecting content before the expand/collapse toggle icon.
-
 import * as React from 'react';
 import './chip.css';
 import './colors.css';
@@ -33,8 +31,7 @@ export const Chip: React.FC<{
   children?: React.ReactNode,
   body?: () => React.ReactNode | undefined,
   dataTestId?: string,
-  beforeToggle?: React.ReactNode,
-}> = ({ header, footer, expanded, setExpanded, children, noInsets, body, dataTestId, beforeToggle }) => {
+}> = ({ header, footer, expanded, setExpanded, children, noInsets, body, dataTestId }) => {
   const id = React.useId();
   return <div className='chip' data-testid={dataTestId}>
     <div
@@ -44,7 +41,6 @@ export const Chip: React.FC<{
       className={clsx('chip-header', setExpanded && ' expanded-' + expanded)}
       onClick={() => setExpanded?.(!expanded)}
       title={typeof header === 'string' ? header : undefined}>
-      {beforeToggle}
       {setExpanded ? (expanded ? <icons.downArrow /> : <icons.rightArrow />) : <icons.spacer />}
       {header}
     </div>

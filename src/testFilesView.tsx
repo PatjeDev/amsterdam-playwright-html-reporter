@@ -24,7 +24,6 @@ import { Chip } from './chip';
 import { CodeSnippet } from './testErrorView';
 import * as icons from './icons';
 import { isMetadataEmpty, MetadataView } from './metadataView';
-import { HeaderView } from './headerView';
 import { clsx } from '@web/uiUtils';
 
 export const TestFilesView: React.FC<{

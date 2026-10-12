@@ -14,9 +14,6 @@
   limitations under the License.
 */
 
-// Modified from Playwright source: added quarantine checkboxes at file-level (chip beforeToggle) and test-level;
-// TestCaseListView accepts showQuarantine prop so callers outside QuarantineProvider can opt out.
-
 import type { TestCaseSummary, TestFileSummary } from './types';
 import * as React from 'react';
 import { msToString } from '@isomorphic/formatUtils';
@@ -27,8 +24,6 @@ import './testFileView.css';
 import { video, image } from './icons';
 import { clsx } from '@web/uiUtils';
 import { ProjectAndTagLabelsView } from './labels';
-import { FEATURES } from './customized/features';
-import { FileQuarantineCheckbox, TestQuarantineCheckbox } from './customized/quarantineCheckboxes';
 
 export const TestFileView: React.FC<{
   file: TestFileSummary;
@@ -45,9 +40,8 @@ export const TestFileView: React.FC<{
       {file.fileName}
     </span>}
     footer={footer}
-    beforeToggle={FEATURES.quarantine ? <FileQuarantineCheckbox fileId={file.fileId} tests={file.tests} /> : undefined}
   >
-    <TestCaseListView tests={file.tests} projectNames={projectNames} showQuarantine={FEATURES.quarantine} />
+    <TestCaseListView tests={file.tests} projectNames={projectNames} />
   </Chip>;
 };
 
@@ -56,8 +50,7 @@ export const TestCaseListView: React.FC<{
   projectNames: string[];
   runs?: number[];
   selectedTestId?: string;
-  showQuarantine?: boolean;
-}> = ({ tests, projectNames, runs, selectedTestId, showQuarantine }) => {
+}> = ({ tests, projectNames, runs, selectedTestId }) => {
   const searchParams = useSearchParams();
   return <div role='list'>
     {tests.map((test, index) => {
@@ -65,10 +58,9 @@ export const TestCaseListView: React.FC<{
       const result = run !== undefined ? test.results[run] : undefined;
       const href = testResultHref({ test, result }, searchParams);
       const selected = selectedTestId === test.testId;
-      return <div key={`test-${test.testId}`} className={clsx('test-file-test', 'test-file-test-outcome-' + test.outcome, selected && 'test-file-test-selected', showQuarantine && 'test-file-test-quarantine')} role='listitem' aria-current={selected}>
+      return <div key={`test-${test.testId}`} className={clsx('test-file-test', 'test-file-test-outcome-' + test.outcome, selected && 'test-file-test-selected')} role='listitem' aria-current={selected}>
         <div className='hbox' style={{ alignItems: 'flex-start' }}>
           <div className='hbox'>
-            {showQuarantine && <TestQuarantineCheckbox test={test} />}
             <span className='test-file-test-status-icon'>
               {statusIcon(test.outcome)}
             </span>
