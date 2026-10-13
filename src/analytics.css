@@ -29,6 +29,18 @@
   background-color: var(--ams-color-background, #fff);
 }
 
+.dashboard-filters {
+  background-color: var(--ams-color-background, #fff);
+  border-radius: var(--ams-border-radius, 4px);
+  padding: var(--ams-space-m, 12px) var(--ams-space-l, 16px);
+}
+
+.dashboard-filters__icon.ams-icon {
+  flex: none;
+  align-self: center;
+  color: var(--ams-color-primary-black, #000);
+}
+
 /* Masonry widget layout: a 4/8/12-column grid (matching the Amsterdam grid
    breakpoints) with a fine-grained implicit row track. Each item keeps its
    configured column width and spans as many rows as its content needs, while

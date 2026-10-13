@@ -16,11 +16,10 @@
 
 import type { FilteredStats, HTMLReport, TestFileSummary } from './types';
 import * as React from 'react';
-import { TestFileView } from './testFileView';
 import './testFileView.css';
-import './chip.css';
+import { Accordion, Paragraph } from '@amsterdam/design-system-react';
 import { msToString } from '@isomorphic/formatUtils';
-import { Chip } from './chip';
+import { TestCaseTableView } from './testCaseTableView';
 import { CodeSnippet } from './testErrorView';
 import * as icons from './icons';
 import { isMetadataEmpty, MetadataView } from './metadataView';
@@ -34,37 +33,28 @@ export const TestFilesView: React.FC<{
   projectNames: string[],
 }> = ({ files, expandedFiles, setExpandedFiles, projectNames }) => {
   const { t } = useTranslation();
-  const filteredFiles = React.useMemo(() => {
-    const result: { file: TestFileSummary, defaultExpanded: boolean }[] = [];
-    let visibleTests = 0;
-    for (const file of files) {
-      visibleTests += file.tests.length;
-      result.push({ file, defaultExpanded: visibleTests < 200 });
-    }
-    return result;
-  }, [files]);
-  return <>
-    {filteredFiles.length > 0 ?
-      filteredFiles.map(({ file, defaultExpanded }) => {
-        return <TestFileView
-          key={`file-${file.fileId}`}
-          file={file}
-          projectNames={projectNames}
-          isFileExpanded={fileId => {
-            const value = expandedFiles.get(fileId);
-            if (value === undefined)
-              return defaultExpanded;
-            return !!value;
-          }}
-          setFileExpanded={(fileId, expanded) => {
-            const newExpanded = new Map(expandedFiles);
-            newExpanded.set(fileId, expanded);
-            setExpandedFiles(newExpanded);
-          }}>
-        </TestFileView>;
-      })
-      : <div className='chip-header test-file-no-files'>{t('report.noTestsFound')}</div>}
-  </>;
+
+  if (files.length === 0)
+    return <Paragraph>{t('report.noTestsFound')}</Paragraph>;
+
+  return <Accordion headingLevel={3} sectionAs='section'>
+    {files.map(file => {
+      const stored = expandedFiles.get(file.fileId);
+      // Accordion sections default to open; a stored preference overrides it.
+      const isExpanded = stored === undefined ? true : stored;
+      return <Accordion.Section
+        key={`file-${file.fileId}`}
+        label={file.fileName}
+        defaultExpanded={isExpanded}
+        onToggle={expanded => {
+          const newExpanded = new Map(expandedFiles);
+          newExpanded.set(file.fileId, expanded);
+          setExpandedFiles(newExpanded);
+        }}>
+        <TestCaseTableView tests={file.tests} projectNames={projectNames} />
+      </Accordion.Section>;
+    })}
+  </Accordion>;
 };
 
 export const TestFilesHeader: React.FC<{
@@ -75,6 +65,8 @@ export const TestFilesHeader: React.FC<{
   errorsVisible: boolean,
   setErrorsVisible: (visible: boolean) => void,
 }> = ({ report, filteredStats, metadataVisible, toggleMetadataVisible, errorsVisible, setErrorsVisible }) => {
+  const { t } = useTranslation();
+
   if (!report)
     return null;
 
@@ -101,8 +93,14 @@ export const TestFilesHeader: React.FC<{
   return <>
     {!isMetadataInTopLine && metadataToggleButton}
     {metadataVisible && <MetadataView metadata={report.metadata}/>}
-    {!!report.errors.length && <Chip header='Errors' dataTestId='report-errors' expanded={errorsVisible} setExpanded={setErrorsVisible}>
-      {report.errors.map((error, index) => <CodeSnippet key={'test-report-error-message-' + index} code={error}/>)}
-    </Chip>}
+    {!!report.errors.length && <Accordion headingLevel={3} sectionAs='section'>
+      <Accordion.Section
+        label={t('report.errors')}
+        defaultExpanded={errorsVisible}
+        onToggle={setErrorsVisible}
+        data-testid='report-errors'>
+        {report.errors.map((error, index) => <CodeSnippet key={'test-report-error-message-' + index} code={error}/>)}
+      </Accordion.Section>
+    </Accordion>}
   </>;
 };

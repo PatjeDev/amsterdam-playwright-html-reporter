@@ -38,7 +38,8 @@ const nl = {
     'filter.allStrategies': 'Alle strategieën',
     'filter.allBrowsers': 'Alle browsers',
     'filter.allProjects': 'Alle projecten',
-    'filter.reset': 'Filters wissen',
+    'filter.reset': 'Wissen',
+    'filter.filters': 'Filters',
 
     'outcome.passed': 'Geslaagd',
     'outcome.failed': 'Mislukt',
@@ -48,11 +49,18 @@ const nl = {
     'col.test': 'Test',
     'col.project': 'Project',
     'col.outcome': 'Resultaat',
+    'col.duration': 'Duur',
+    'col.labels': 'Labels',
+    'col.actions': 'Acties',
+
+    'action.viewTestCase': 'Testcase bekijken',
+    'action.viewTrace': 'Trace bekijken',
 
     'report.search': 'Zoek testen',
     'report.all': 'Alle',
     'report.speedboard': 'Speedboard',
     'report.noTestsFound': 'Geen testen gevonden',
+    'report.errors': 'Fouten',
 
     'layout.brandName': 'Testrapport',
     'layout.logoLinkTitle': 'Naar de testrapport',
@@ -141,7 +149,8 @@ const en: Record<TranslationKey, string> = {
     'filter.allStrategies': 'All strategies',
     'filter.allBrowsers': 'All browsers',
     'filter.allProjects': 'All projects',
-    'filter.reset': 'Reset filters',
+    'filter.reset': 'Clear',
+    'filter.filters': 'Filters',
 
     'outcome.passed': 'Passed',
     'outcome.failed': 'Failed',
@@ -151,11 +160,18 @@ const en: Record<TranslationKey, string> = {
     'col.test': 'Test',
     'col.project': 'Project',
     'col.outcome': 'Outcome',
+    'col.duration': 'Duration',
+    'col.labels': 'Labels',
+    'col.actions': 'Actions',
+
+    'action.viewTestCase': 'View test case',
+    'action.viewTrace': 'View trace',
 
     'report.search': 'Search tests',
     'report.all': 'All',
     'report.speedboard': 'Speedboard',
     'report.noTestsFound': 'No tests found',
+    'report.errors': 'Errors',
 
     'layout.brandName': 'Test report',
     'layout.logoLinkTitle': 'To the test report',

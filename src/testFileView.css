@@ -74,6 +74,23 @@
   flex: none;
 }
 
+/* Higher specificity than ADS `.ams-table__cell { vertical-align: top }`. */
+.ams-table__cell.test-cell-middle {
+  vertical-align: middle;
+}
+
+.test-file-path-row {
+  margin-top: 2px;
+  line-height: 16px;
+}
+
+.test-file-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
 .test-file-header-info {
   display: flex;
   align-items: center;

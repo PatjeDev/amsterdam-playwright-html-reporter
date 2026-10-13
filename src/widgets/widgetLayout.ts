@@ -168,6 +168,13 @@ export function useWidgetLayout() {
 
     const resetLayout = () => setStored(defaultDashboardLayout())
 
+    const defaults = defaultDashboardLayout()
+    const isDefaultLayout =
+        hidden.length === 0 &&
+        order.length === defaults.order.length &&
+        order.every((id, index) => id === defaults.order[index]) &&
+        WIDGETS.every((widget) => widths[widget.id] === widget.defaultWidth)
+
     return {
         orderedWidgets,
         visibleWidgets,
@@ -177,5 +184,6 @@ export function useWidgetLayout() {
         isWidgetVisible,
         setWidgetVisible,
         resetLayout,
+        isDefaultLayout,
     }
 }

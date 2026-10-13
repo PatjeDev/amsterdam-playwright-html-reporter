@@ -1,4 +1,5 @@
 import {
+    ActionGroup,
     Button,
     DescriptionList,
     Field,
@@ -27,6 +28,9 @@ import { useTranslation } from '../i18n'
 import {
     DocumentsIcon,
     ErrorIcon,
+    FilterIcon,
+    CloseIcon,
+    UndoIcon,
     InfoIcon,
     SuccessIcon,
     ThumbsDownIcon,
@@ -70,6 +74,7 @@ export function Dashboard({ report }: DashboardProps) {
         moveWidget,
         setWidgetVisible,
         resetLayout,
+        isDefaultLayout,
     } = useWidgetLayout()
     const [draggingId, setDraggingId] = useState<string | null>(null)
     const [dragOverId, setDragOverId] = useState<string | null>(null)
@@ -172,6 +177,7 @@ export function Dashboard({ report }: DashboardProps) {
     const [strategy, setStrategy] = useState('all')
     const [browser, setBrowser] = useState('all')
     const [project, setProject] = useState('all')
+    const [filtersVisible, setFiltersVisible] = useState(false)
 
     // Each dropdown's options depend on the other three selections.
     const filteredForApplications = allAnalytics.tests.filter(
@@ -335,6 +341,12 @@ export function Dashboard({ report }: DashboardProps) {
         setProject('all')
     }
 
+    const hasActiveFilters =
+        application !== 'all' ||
+        strategy !== 'all' ||
+        browser !== 'all' ||
+        project !== 'all'
+
     const handleWidgetDrop = (targetId: string) => {
         if (draggingId) moveWidget(draggingId, targetId)
         setDraggingId(null)
@@ -385,22 +397,54 @@ export function Dashboard({ report }: DashboardProps) {
                     <Heading level={2} size="level-1">
                         {t('dashboard.title')}
                     </Heading>
-                    <Button
-                        variant="tertiary"
-                        type="button"
-                        onClick={resetLayout}
-                    >
-                        {t('dashboard.resetLayout')}
-                    </Button>
+                    <ActionGroup>
+                        <Button
+                            variant="tertiary"
+                            type="button"
+                            icon={UndoIcon}
+                            iconBefore
+                            disabled={isDefaultLayout}
+                            onClick={resetLayout}
+                        >
+                            {t('dashboard.resetLayout')}
+                        </Button>
+                        {hasFilters && (
+                            <Button
+                                variant="primary"
+                                type="button"
+                                icon={FilterIcon}
+                                iconBefore
+                                aria-pressed={filtersVisible}
+                                aria-expanded={filtersVisible}
+                                onClick={() =>
+                                    setFiltersVisible((visible) => !visible)
+                                }
+                            >
+                                {t('filter.filters')}
+                            </Button>
+                        )}
+                    </ActionGroup>
                 </Row>
             </Grid.Cell>
 
-            {hasFilters && (
+            {hasFilters && filtersVisible && (
                 <Grid.Cell appearance="transparent" span="all">
-                    <Row alignVertical="end" wrap>
+                    <div className="dashboard-filters">
+                    <Row align="between" alignVertical="center" wrap>
+                        <Row alignVertical="center" gap="small">
+                            <Icon
+                                size="heading-3"
+                                svg={FilterIcon}
+                                className="dashboard-filters__icon"
+                            />
+                            <Heading level={3} size="level-3">
+                                {t('filter.filters')}
+                            </Heading>
+                        </Row>
+                        <Row alignVertical="center" wrap>
                         {showApplicationFilter && (
                             <Field>
-                                <Label htmlFor="dashboard-filter-application">
+                                <Label className="ams-visually-hidden" htmlFor="dashboard-filter-application">
                                     {t('filter.application')}
                                 </Label>
                                 <Select
@@ -427,7 +471,7 @@ export function Dashboard({ report }: DashboardProps) {
 
                         {showStrategyFilter && (
                             <Field>
-                                <Label htmlFor="dashboard-filter-strategy">
+                                <Label className="ams-visually-hidden" htmlFor="dashboard-filter-strategy">
                                     {t('filter.strategy')}
                                 </Label>
                                 <Select
@@ -454,7 +498,7 @@ export function Dashboard({ report }: DashboardProps) {
 
                         {showBrowserFilter && (
                             <Field>
-                                <Label htmlFor="dashboard-filter-browser">
+                                <Label className="ams-visually-hidden" htmlFor="dashboard-filter-browser">
                                     {t('filter.browser')}
                                 </Label>
                                 <Select
@@ -481,7 +525,7 @@ export function Dashboard({ report }: DashboardProps) {
 
                         {showProjectFilter && (
                             <Field>
-                                <Label htmlFor="dashboard-filter-project">
+                                <Label className="ams-visually-hidden" htmlFor="dashboard-filter-project">
                                     {t('filter.project')}
                                 </Label>
                                 <Select
@@ -509,11 +553,16 @@ export function Dashboard({ report }: DashboardProps) {
                         <Button
                             variant="secondary"
                             type="button"
+                            icon={CloseIcon}
+                            iconBefore
+                            disabled={!hasActiveFilters}
                             onClick={resetFilters}
                         >
                             {t('filter.reset')}
                         </Button>
+                        </Row>
                     </Row>
+                    </div>
                 </Grid.Cell>
             )}
 
