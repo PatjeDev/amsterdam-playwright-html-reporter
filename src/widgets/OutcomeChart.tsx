@@ -17,28 +17,18 @@ export function OutcomeChart({ data }: Props) {
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    const outcomeKeys = ["passed", "failed", "flaky", "skipped"] as const;
+    const visibleOutcomes = outcomeKeys.filter(
+      key => data.counts[key] > 0,
+    );
+
     const chart = new Chart(canvasRef.current, {
       type: "doughnut",
       data: {
-        labels: [
-          t("outcome.passed"),
-          t("outcome.failed"),
-          t("outcome.flaky"),
-          t("outcome.skipped"),
-        ],
+        labels: visibleOutcomes.map(key => t(`outcome.${key}`)),
         datasets: [{
-          data: [
-            data.counts.passed,
-            data.counts.failed,
-            data.counts.flaky,
-            data.counts.skipped,
-          ],
-          backgroundColor: [
-            outcomeColors.passed,
-            outcomeColors.failed,
-            outcomeColors.flaky,
-            outcomeColors.skipped,
-          ],
+          data: visibleOutcomes.map(key => data.counts[key]),
+          backgroundColor: visibleOutcomes.map(key => outcomeColors[key]),
           borderWidth: 0,
         }],
       },

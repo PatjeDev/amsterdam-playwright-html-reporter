@@ -5,7 +5,9 @@ import {
     Heading,
     Label,
     Paragraph,
+    Row,
     Select,
+    Switch,
     TabNavigation,
 } from '@amsterdam/design-system-react'
 import { useState } from 'react'
@@ -18,8 +20,9 @@ import {
     useLanguage,
     useTranslation,
 } from '../i18n'
+import { useWidgetLayout } from '../widgets/widgetLayout'
 
-type SettingsTab = 'report' | 'appearance' | 'language'
+type SettingsTab = 'report' | 'widgets' | 'appearance' | 'language'
 
 export function Settings() {
     const { t } = useTranslation()
@@ -52,6 +55,19 @@ export function Settings() {
                         <TabNavigation.Link
                             href="#"
                             aria-current={
+                                activeTab === 'widgets' ? 'page' : undefined
+                            }
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setActiveTab('widgets')
+                            }}
+                        >
+                            {t('settings.tab.widgets')}
+                        </TabNavigation.Link>
+
+                        <TabNavigation.Link
+                            href="#"
+                            aria-current={
                                 activeTab === 'appearance' ? 'page' : undefined
                             }
                             onClick={(event) => {
@@ -78,6 +94,8 @@ export function Settings() {
                 </TabNavigation>
 
                 {activeTab === 'report' && <ReportSettings />}
+
+                {activeTab === 'widgets' && <WidgetSettings />}
 
                 {activeTab === 'appearance' && <AppearanceSettings />}
 
@@ -113,6 +131,52 @@ function ReportSettings() {
                 >
                     {t('settings.report.label')}
                 </Checkbox>
+            </Field>
+        </section>
+    )
+}
+
+function WidgetSettings() {
+    const { t } = useTranslation()
+    const { orderedWidgets, isWidgetVisible, setWidgetVisible } =
+        useWidgetLayout()
+
+    return (
+        <section className="settings-container">
+            <Field>
+                <Label htmlFor="widget-visibility-settings">
+                    {t('settings.widgets.label')}
+                </Label>
+
+                <Paragraph id="widget-visibility-settings-description">
+                    {t('settings.widgets.description')}
+                </Paragraph>
+
+                <ul
+                    className="settings-widget-list"
+                    id="widget-visibility-settings"
+                    aria-describedby="widget-visibility-settings-description"
+                >
+                    {orderedWidgets.map((widget) => (
+                        <li key={widget.id}>
+                            <Row alignVertical="center" gap="small">
+                                <Switch
+                                    id={`widget-visible-${widget.id}`}
+                                    checked={isWidgetVisible(widget.id)}
+                                    onChange={(event) =>
+                                        setWidgetVisible(
+                                            widget.id,
+                                            event.target.checked,
+                                        )
+                                    }
+                                />
+                                <Label htmlFor={`widget-visible-${widget.id}`}>
+                                    {t(widget.titleKey)}
+                                </Label>
+                            </Row>
+                        </li>
+                    ))}
+                </ul>
             </Field>
         </section>
     )

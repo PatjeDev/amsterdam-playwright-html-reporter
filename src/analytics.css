@@ -28,6 +28,115 @@
   padding: 16px;
   background-color: var(--ams-color-background, #fff);
 }
+
+/* Masonry widget layout: a 4/8/12-column grid (matching the Amsterdam grid
+   breakpoints) with a fine-grained implicit row track. Each item keeps its
+   configured column width and spans as many rows as its content needs, while
+   `grid-auto-flow: dense` packs shorter widgets up into the gaps. */
+.widget-masonry {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 4px;
+  grid-auto-flow: row dense;
+  column-gap: var(--ams-space-xl);
+  row-gap: 0;
+  align-items: start;
+}
+
+@media (min-width: 37.5rem) {
+  .widget-masonry {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 72.5rem) {
+  .widget-masonry {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.widget-masonry__item {
+  grid-column: span var(--span-narrow, 4);
+  grid-row: span var(--row-span, 1);
+  min-width: 0;
+}
+
+@media (min-width: 37.5rem) {
+  .widget-masonry__item {
+    grid-column: span var(--span-medium, 8);
+  }
+}
+
+@media (min-width: 72.5rem) {
+  .widget-masonry__item {
+    grid-column: span var(--span-wide, 12);
+  }
+}
+
+.widget-masonry__item-inner {
+  min-width: 0;
+}
+
+.widget-frame {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+}
+
+.widget-frame > .analytics-card,
+.widget-frame > .browser-matrix {
+  height: 100%;
+}
+
+.widget-frame__toolbar {
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.widget-frame__handle {
+  cursor: grab;
+}
+
+.widget-frame__handle:active {
+  cursor: grabbing;
+}
+
+.widget-frame--dragging {
+  opacity: 0.5;
+}
+
+.widget-frame--drop-target::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed var(--ams-color-primary-blue, #004699);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.widget-frame--drop-target::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -10px;
+  width: 4px;
+  border-radius: 2px;
+  background-color: var(--ams-color-primary-blue, #004699);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Keep the widget heading clear of the toolbar buttons. */
+.widget-frame > .analytics-card > .ams-heading:first-of-type,
+.widget-frame > .browser-matrix > .ams-heading:first-of-type,
+.widget-frame .browser-matrix__header {
+  padding-inline-end: 72px;
+}
 table {
   min-width: 100%;
 }

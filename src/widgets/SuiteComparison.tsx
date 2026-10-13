@@ -17,32 +17,20 @@ export function SuiteComparison({ data }: Props) {
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    const outcomeKeys = ["passed", "failed", "flaky", "skipped"] as const;
+    const datasets = outcomeKeys
+      .map(key => ({
+        label: t(`outcome.${key}`),
+        data: data.suites.map(suite => suite[key]),
+        backgroundColor: outcomeColors[key],
+      }))
+      .filter(dataset => dataset.data.some(value => value > 0));
+
     const chart = new Chart(canvasRef.current, {
       type: "bar",
       data: {
         labels: data.suites.map(suite => suite.name),
-        datasets: [
-          {
-            label: t("outcome.passed"),
-            data: data.suites.map(suite => suite.passed),
-            backgroundColor: outcomeColors.passed,
-          },
-          {
-            label: t("outcome.failed"),
-            data: data.suites.map(suite => suite.failed),
-            backgroundColor: outcomeColors.failed,
-          },
-          {
-            label: t("outcome.flaky"),
-            data: data.suites.map(suite => suite.flaky),
-            backgroundColor: outcomeColors.flaky,
-          },
-          {
-            label: t("outcome.skipped"),
-            data: data.suites.map(suite => suite.skipped),
-            backgroundColor: outcomeColors.skipped,
-          },
-        ],
+        datasets,
       },
       options: {
         responsive: true,

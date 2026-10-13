@@ -19,12 +19,9 @@ import type {
     OutcomeCounts,
     SuiteSummary,
 } from '../analytics/analytics'
-import { OutcomeChart } from '../widgets/OutcomeChart'
-import { SuiteComparison } from '../widgets/SuiteComparison'
-import { BrowserMatrix } from '../widgets/BrowserMatrix'
-import { RetryAnalyzer } from '../widgets/RetryAnalyzer'
-import { SlowestTests } from '../widgets/SlowestTests'
-import { FailureHotspots } from '../widgets/FailureHotspots'
+import { WidgetFrame } from '../widgets/WidgetFrame'
+import { MasonryGrid, MasonryItem } from '../widgets/MasonryGrid'
+import { useWidgetLayout, widgetWidthSpans } from '../widgets/widgetLayout'
 import '../analytics.css'
 import { useTranslation } from '../i18n'
 import {
@@ -66,6 +63,105 @@ const uniqueValues = (values: string[]) =>
 
 export function Dashboard({ report }: DashboardProps) {
     const { t } = useTranslation()
+    const {
+        visibleWidgets,
+        widths,
+        setWidth,
+        moveWidget,
+        setWidgetVisible,
+        resetLayout,
+    } = useWidgetLayout()
+    const [draggingId, setDraggingId] = useState<string | null>(null)
+    const [dragOverId, setDragOverId] = useState<string | null>(null)
+
+    // Auto-scroll the page body while dragging a widget near the top/bottom edge.
+    useEffect(() => {
+        if (!draggingId) return
+
+        const edgeSize = 100
+        const maxSpeed = 18
+        let pointerY = 0
+        let hasPointer = false
+        let frame = 0
+
+        // The scroll container depends on content height: the dashboard body
+        // (`.ams-page__area--body`) scrolls internally when it overflows, but
+        // otherwise the whole window scrolls. Resolve it each frame so
+        // auto-scroll works in both cases.
+        const resolveScroller = (): {
+            element: HTMLElement
+            top: number
+            bottom: number
+        } | null => {
+            const body = document.querySelector(
+                '.ams-page__area--body',
+            ) as HTMLElement | null
+
+            if (body && body.scrollHeight > body.clientHeight + 1) {
+                const rect = body.getBoundingClientRect()
+                return { element: body, top: rect.top, bottom: rect.bottom }
+            }
+
+            const pageScroller =
+                (document.scrollingElement as HTMLElement | null) ??
+                document.documentElement
+
+            if (
+                pageScroller &&
+                pageScroller.scrollHeight > pageScroller.clientHeight + 1
+            )
+                return {
+                    element: pageScroller,
+                    top: 0,
+                    bottom: window.innerHeight,
+                }
+
+            return null
+        }
+
+        const handleDragOver = (event: DragEvent) => {
+            event.preventDefault()
+            pointerY = event.clientY
+            hasPointer = true
+        }
+
+        const tick = () => {
+            if (!hasPointer) {
+                frame = requestAnimationFrame(tick)
+                return
+            }
+
+            const scroller = resolveScroller()
+
+            if (!scroller) {
+                frame = requestAnimationFrame(tick)
+                return
+            }
+
+            const { element, top, bottom } = scroller
+            let delta = 0
+
+            if (pointerY < top + edgeSize)
+                delta =
+                    -maxSpeed *
+                    Math.min(1, (top + edgeSize - pointerY) / edgeSize)
+            else if (pointerY > bottom - edgeSize)
+                delta =
+                    maxSpeed *
+                    Math.min(1, (pointerY - (bottom - edgeSize)) / edgeSize)
+
+            if (delta !== 0) element.scrollBy(0, delta)
+            frame = requestAnimationFrame(tick)
+        }
+
+        document.addEventListener('dragover', handleDragOver)
+        frame = requestAnimationFrame(tick)
+
+        return () => {
+            document.removeEventListener('dragover', handleDragOver)
+            cancelAnimationFrame(frame)
+        }
+    }, [draggingId])
 
     const allAnalytics = useMemo(
         () => (report ? buildAnalytics(report.json()) : emptyAnalytics),
@@ -239,6 +335,17 @@ export function Dashboard({ report }: DashboardProps) {
         setProject('all')
     }
 
+    const handleWidgetDrop = (targetId: string) => {
+        if (draggingId) moveWidget(draggingId, targetId)
+        setDraggingId(null)
+        setDragOverId(null)
+    }
+
+    const handleWidgetDragEnd = () => {
+        setDraggingId(null)
+        setDragOverId(null)
+    }
+
     if (!report) {
         return (
             <Grid paddingVertical="large">
@@ -270,9 +377,22 @@ export function Dashboard({ report }: DashboardProps) {
     return (
         <Grid paddingVertical="large">
             <Grid.Cell appearance="transparent" span="all">
-                <Heading level={2} size="level-1">
-                    {t('dashboard.title')}
-                </Heading>
+                <Row
+                    align="between"
+                    alignVertical="center"
+                    wrap
+                >
+                    <Heading level={2} size="level-1">
+                        {t('dashboard.title')}
+                    </Heading>
+                    <Button
+                        variant="tertiary"
+                        type="button"
+                        onClick={resetLayout}
+                    >
+                        {t('dashboard.resetLayout')}
+                    </Button>
+                </Row>
             </Grid.Cell>
 
             {hasFilters && (
@@ -525,17 +645,48 @@ export function Dashboard({ report }: DashboardProps) {
             </Grid.Subgrid>
 
             <Grid.Cell appearance="transparent" span="all">
-                <div className="analytics-charts">
-                    <OutcomeChart data={analytics} />
-                    <SuiteComparison data={analytics} />
-                    <BrowserMatrix data={analytics} />
-                </div>
+                {visibleWidgets.length === 0 ? (
+                    <Paragraph>{t('dashboard.noWidgets')}</Paragraph>
+                ) : (
+                    <MasonryGrid>
+                    {visibleWidgets.map((widget) => {
+                        const Widget = widget.component
 
-                <div className="analytics-widgets">
-                    <RetryAnalyzer data={analytics} />
-                    <SlowestTests data={analytics} />
-                    <FailureHotspots data={analytics} />
-                </div>
+                        return (
+                            <MasonryItem
+                                key={widget.id}
+                                columnSpans={
+                                    widgetWidthSpans[widths[widget.id]]
+                                }
+                            >
+                                <WidgetFrame
+                                    id={widget.id}
+                                    titleKey={widget.titleKey}
+                                    width={widths[widget.id]}
+                                    isDragging={draggingId === widget.id}
+                                    isDropTarget={
+                                        dragOverId === widget.id &&
+                                        draggingId !== null &&
+                                        draggingId !== widget.id
+                                    }
+                                    onWidthChange={(nextWidth) =>
+                                        setWidth(widget.id, nextWidth)
+                                    }
+                                    onDragStartWidget={setDraggingId}
+                                    onDragEndWidget={handleWidgetDragEnd}
+                                    onDragOverWidget={setDragOverId}
+                                    onDropWidget={handleWidgetDrop}
+                                    onVisibilityChange={(visible) =>
+                                        setWidgetVisible(widget.id, visible)
+                                    }
+                                >
+                                    <Widget data={analytics} />
+                                </WidgetFrame>
+                            </MasonryItem>
+                        )
+                    })}
+                </MasonryGrid>
+                )}
             </Grid.Cell>
         </Grid>
     )

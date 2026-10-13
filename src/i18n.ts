@@ -19,6 +19,9 @@ const nl = {
 
     'dashboard.title': 'Dashboard',
     'dashboard.loading': 'Rapport wordt geladen...',
+    'dashboard.resetLayout': 'Indeling herstellen',
+    'dashboard.noWidgets':
+        'Alle widgets zijn verborgen. Schakel ze in via Instellingen.',
 
     'stats.total': 'Totaal',
     'stats.passed': 'Geslaagd',
@@ -82,12 +85,28 @@ const nl = {
     'widget.hotspots.colFlaky': 'Onbetrouwbaar',
     'widget.hotspots.colFailureRate': 'Faalpercentage',
 
+    'widget.drag.label': 'Versleep om te herschikken',
+    'widget.settings.open': 'Widget-instellingen openen',
+    'widget.settings.titleFor': 'Widget-instellingen: {name}',
+    'widget.settings.width': 'Breedte',
+    'widget.settings.visible': 'Widget tonen',
+    'widget.settings.close': 'Sluiten',
+
+    'width.third': 'Een derde',
+    'width.half': 'Helft',
+    'width.twoThirds': 'Twee derde',
+    'width.full': 'Volledig',
+
     'settings.title': 'Instellingen',
     'settings.tab.report': 'Rapport',
+    'settings.tab.widgets': 'Widgets',
     'settings.tab.appearance': 'Uiterlijk',
     'settings.tab.language': 'Taal',
     'settings.report.label': 'Bestanden samenvoegen',
     'settings.report.description': 'Combineer de bestanden van het testrapport.',
+    'settings.widgets.label': 'Zichtbare widgets',
+    'settings.widgets.description':
+        'Kies welke widgets op het dashboard worden getoond.',
     'settings.appearance.label': 'Thema',
     'settings.appearance.description': 'Kies het uiterlijk van het rapport.',
     'settings.language.label': 'Taal',
@@ -103,6 +122,9 @@ const en: Record<TranslationKey, string> = {
 
     'dashboard.title': 'Dashboard',
     'dashboard.loading': 'Report is loading...',
+    'dashboard.resetLayout': 'Reset layout',
+    'dashboard.noWidgets':
+        'All widgets are hidden. Enable them in Settings.',
 
     'stats.total': 'Total',
     'stats.passed': 'Passed',
@@ -164,12 +186,28 @@ const en: Record<TranslationKey, string> = {
     'widget.hotspots.colFlaky': 'Flaky',
     'widget.hotspots.colFailureRate': 'Failure rate',
 
+    'widget.drag.label': 'Drag to rearrange',
+    'widget.settings.open': 'Open widget settings',
+    'widget.settings.titleFor': 'Widget settings: {name}',
+    'widget.settings.width': 'Width',
+    'widget.settings.visible': 'Show widget',
+    'widget.settings.close': 'Close',
+
+    'width.third': 'One third',
+    'width.half': 'Half',
+    'width.twoThirds': 'Two thirds',
+    'width.full': 'Full width',
+
     'settings.title': 'Settings',
     'settings.tab.report': 'Report',
+    'settings.tab.widgets': 'Widgets',
     'settings.tab.appearance': 'Appearance',
     'settings.tab.language': 'Language',
     'settings.report.label': 'Merge files',
     'settings.report.description': 'Combine the files of the test report.',
+    'settings.widgets.label': 'Visible widgets',
+    'settings.widgets.description':
+        'Choose which widgets are shown on the dashboard.',
     'settings.appearance.label': 'Theme',
     'settings.appearance.description': 'Choose the appearance of the report.',
     'settings.language.label': 'Language',

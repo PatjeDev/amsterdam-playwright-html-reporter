@@ -1,4 +1,4 @@
-# customized-html-reporter
+# Amsterdam HTML Test Reporter for Playwright
 
 A customized standalone HTML test reporter for [Playwright](https://playwright.dev), derived
 from Playwright's built-in HTML reporter.
